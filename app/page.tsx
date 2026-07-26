@@ -148,6 +148,9 @@ function ImagingViewer() {
           <span>Genuine de-identified imaging</span>
           <span>{study.frames}</span>
         </div>
+        <div className="image-credit">
+          {study.credit}
+        </div>
       </div>
 
       <div className="viewer-controls">
@@ -163,10 +166,6 @@ function ImagingViewer() {
         <span className="slice-count">{study.frames}</span>
       </div>
 
-      <div className="viewer-footer">
-        <span>Image credit</span>
-        <strong>{study.credit}</strong>
-      </div>
     </div>
   );
 }
