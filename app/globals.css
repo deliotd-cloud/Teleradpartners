@@ -479,11 +479,13 @@ footer nav a:hover {
   background: #01060b;
 }
 
-.viewport canvas {
+.viewport img {
   display: block;
   width: 100%;
   height: 100%;
-  image-rendering: auto;
+  object-fit: contain;
+  object-position: center;
+  background: #01060b;
 }
 
 .crosshair {
@@ -566,15 +568,24 @@ footer nav a:hover {
   cursor: pointer;
 }
 
-.viewer-controls label {
-  display: flex;
+.cine-track {
+  height: 2px;
+  overflow: hidden;
+  background: rgba(125, 231, 255, 0.14);
 }
 
-.viewer-controls input {
+.cine-track i {
+  display: block;
   width: 100%;
-  height: 2px;
-  accent-color: var(--cyan);
-  cursor: ew-resize;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--cyan-bright));
+  transform-origin: left;
+  animation: cine-progress 4s linear infinite;
+}
+
+@keyframes cine-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 .slice-count,
@@ -587,6 +598,15 @@ footer nav a:hover {
 .viewer-footer {
   border-top: 1px solid rgba(125, 231, 255, 0.08);
   border-bottom: 0;
+}
+
+.viewer-footer strong {
+  color: #b9e5f1;
+  font-family: var(--font-mono-ui);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: right;
 }
 
 .floating-note {

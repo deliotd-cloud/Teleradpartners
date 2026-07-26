@@ -7,8 +7,8 @@ Production website for [teleradpartners.com](https://teleradpartners.com), built
 - Responsive, cinematic single-page experience
 - Preserved Telerad Partners logo and brand palette
 - Genuine open-license spine MRI, whole-body PET/CT, prostate MRI and fracture radiographs
-- Procedurally generated CT, MRI and PET imaging demo (no patient data)
-- Interactive slice controls and CT viewing presets
+- Genuine open-license CT, MRI and PET cine sequences in both viewer locations
+- Interactive modality switching and replay controls
 - Animated reporting workflow and global-coverage visual
 - Accessible keyboard navigation and reduced-motion support
 - SEO metadata, canonical URL, sitemap, robots rules and social preview
@@ -43,6 +43,6 @@ GitHub remains the source repository. If the domain currently points to another 
 2. Confirm the existing public service statements and 24/7/365 wording.
 3. Add the production domain to the hosting project and apply the returned DNS records.
 
-The imaging viewer is deliberately labelled as illustrative and procedurally generated. It contains no patient data and is not a diagnostic viewer.
+The imaging viewer uses genuine, de-identified clinical sequences sourced under commercial-compatible open licences. It is clearly labelled as a demonstration and is not a diagnostic viewer.
 
 The service-card imaging is genuine clinical material. Full source and commercial-reuse licence details are recorded in `IMAGING_CREDITS.md` and displayed in the website footer.

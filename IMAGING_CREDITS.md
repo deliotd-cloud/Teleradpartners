@@ -1,6 +1,6 @@
 # Clinical imaging credits
 
-The service cards use genuine clinical images sourced from Wikimedia Commons. Each source page explicitly permits commercial reuse under the stated licence.
+The service cards and interactive viewers use genuine clinical images sourced from Wikimedia Commons. Each source page permits commercial reuse under the stated licence.
 
 ## Musculoskeletal imaging
 
@@ -33,6 +33,30 @@ The service cards use genuine clinical images sourced from Wikimedia Commons. Ea
 - Creator: Ashish j29
 - Licence: [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
 - Local file: `public/imaging-fracture-xray.jpg`
+
+## Interactive viewer: CT
+
+- Image: [Schaedel-CT.gif](https://commons.wikimedia.org/wiki/File:Schaedel-CT.gif)
+- Description: 51-frame axial CT cine sequence of the human head
+- Creator: Tafkas
+- Licence: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)
+- Local file: `public/viewer-ct.gif`
+
+## Interactive viewer: MRI
+
+- Image: [Brain MRI T1 movie.gif](https://commons.wikimedia.org/wiki/File:Brain_MRI_T1_movie.gif)
+- Description: 37-frame T1-weighted axial MRI cine sequence of a normal brain
+- Creator: Dr Laurent Hermoye / Imagilys
+- Licence: [CC BY-SA 2.5](https://creativecommons.org/licenses/by-sa/2.5/)
+- Local file: `public/viewer-mri.gif`
+
+## Interactive viewer: PET
+
+- Image: [PET-MIPS-anim.gif](https://commons.wikimedia.org/wiki/File:PET-MIPS-anim.gif)
+- Description: 32-frame whole-body FDG PET maximum-intensity-projection sequence demonstrating liver metastases
+- Creator: Jens Maus
+- Licence: Public domain
+- Local file: `public/viewer-pet.gif`
 
 ## Use notes
 

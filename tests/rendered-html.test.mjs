@@ -35,7 +35,8 @@ test("server-renders the finished Telerad Partners homepage", async () => {
   assert.match(html, /Making medicine/);
   assert.match(html, /Subspecialty imaging/);
   assert.match(html, /Global coverage/);
-  assert.match(html, /Interactive synthetic medical imaging demonstration/);
+  assert.match(html, /Interactive genuine medical imaging demonstration/);
+  assert.match(html, /Genuine de-identified imaging/);
   assert.match(html, /Genuine scan ·[\s\S]*?CC0/);
   assert.match(html, /Genuine scan ·[\s\S]*?CC BY 4\.0/);
   assert.match(html, /Clinical image credits and licences/);
@@ -56,7 +57,7 @@ test("ships production metadata and project assets", async () => {
   assert.match(layout, /images:\s*\["\/og\.png"\]/);
   assert.match(layout, /themeColor:\s*"#03111d"/);
   assert.match(css, /prefers-reduced-motion/);
-  assert.match(page, /Illustrative synthetic imaging/);
+  assert.match(page, /Genuine de-identified imaging/);
   assert.doesNotMatch(packageJson, /react-loading-skeleton/);
 
   await Promise.all([
@@ -66,6 +67,9 @@ test("ships production metadata and project assets", async () => {
     access(new URL("../public/imaging-oncology-petct.jpg", import.meta.url)),
     access(new URL("../public/imaging-prostate-mri.jpg", import.meta.url)),
     access(new URL("../public/imaging-fracture-xray.jpg", import.meta.url)),
+    access(new URL("../public/viewer-ct.gif", import.meta.url)),
+    access(new URL("../public/viewer-mri.gif", import.meta.url)),
+    access(new URL("../public/viewer-pet.gif", import.meta.url)),
     access(new URL("../IMAGING_CREDITS.md", import.meta.url)),
   ]);
 

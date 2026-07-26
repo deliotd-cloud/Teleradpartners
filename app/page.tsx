@@ -1,10 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import Image from "next/image";
 
 type Modality = "CT" | "MRI" | "PET";
-type ViewerPreset = "Soft tissue" | "Bone";
 
 const services = [
   {
@@ -78,117 +77,37 @@ const workflow = [
   ["04", "Report returned", "The verified report goes back to the clinical team."],
 ] as const;
 
-function seededNoise(x: number, y: number, seed: number) {
-  const value = Math.sin(x * 12.9898 + y * 78.233 + seed * 37.719) * 43758.5453;
-  return value - Math.floor(value);
-}
-
-function drawSyntheticScan(
-  canvas: HTMLCanvasElement,
-  modality: Modality,
-  slice: number,
-  preset: ViewerPreset,
-) {
-  const size = 420;
-  const ctx = canvas.getContext("2d", { alpha: false });
-  if (!ctx) return;
-
-  canvas.width = size;
-  canvas.height = size;
-  const image = ctx.createImageData(size, size);
-  const phase = (slice / 95) * Math.PI * 2;
-  const sliceScale = 0.84 + Math.sin((slice / 95) * Math.PI) * 0.13;
-
-  for (let y = 0; y < size; y += 1) {
-    for (let x = 0; x < size; x += 1) {
-      const i = (y * size + x) * 4;
-      const nx = (x - size / 2) / (size * 0.39 * sliceScale);
-      const ny = (y - size / 2) / (size * 0.455 * sliceScale);
-      const radius = Math.sqrt(nx * nx + ny * ny);
-      const noise = seededNoise(x, y, slice) - 0.5;
-      let red = 2;
-      let green = 9;
-      let blue = 15;
-
-      if (radius < 1) {
-        const ventricleA = ((nx + 0.105) / 0.12) ** 2 + ((ny + 0.03) / 0.19) ** 2 < 1;
-        const ventricleB = ((nx - 0.105) / 0.12) ** 2 + ((ny + 0.03) / 0.19) ** 2 < 1;
-        const tissueWave = Math.sin(nx * 24 + phase) * 6 + Math.cos(ny * 29 - phase) * 5;
-
-        if (modality === "CT") {
-          let density = preset === "Bone" ? 40 : 72;
-          density += noise * (preset === "Bone" ? 34 : 22) + tissueWave;
-          if (radius > 0.86) density = preset === "Bone" ? 244 : 188;
-          if (radius > 0.8 && radius <= 0.86) density = 28;
-          if (ventricleA || ventricleB) density = 24 + noise * 5;
-          const calcification = (nx + 0.3) ** 2 + (ny - 0.18) ** 2 < 0.0035;
-          if (calcification) density = 220;
-          red = green = blue = Math.max(0, Math.min(255, density));
-        } else if (modality === "MRI") {
-          let density = 88 + noise * 42 + tissueWave * 1.6;
-          const whiteMatter = (nx / 0.65) ** 2 + ((ny + 0.02) / 0.72) ** 2 < 1;
-          if (whiteMatter) density += 38;
-          if (radius > 0.9) density = 18 + noise * 8;
-          if (ventricleA || ventricleB) density = 8 + noise * 3;
-          red = density * 0.93;
-          green = density * 0.98;
-          blue = density * 1.06;
-        } else {
-          const spots = [
-            [0.0, -0.2, 0.2, 1.0],
-            [-0.32, 0.12, 0.16, 0.7],
-            [0.35, 0.15, 0.18, 0.78],
-            [0.05, 0.48, 0.13, 0.65],
-          ] as const;
-          let heat = 0.05;
-          for (const [sx, sy, spread, intensity] of spots) {
-            const distance = (nx - sx) ** 2 + (ny - sy) ** 2;
-            heat += Math.exp(-distance / (spread * spread)) * intensity;
-          }
-          heat = Math.min(1, heat + noise * 0.08);
-          red = Math.min(255, heat * 390);
-          green = Math.min(255, Math.max(0, (heat - 0.2) * 310));
-          blue = Math.min(255, Math.max(12, (0.62 - heat) * 220));
-        }
-      }
-
-      image.data[i] = Math.max(0, Math.min(255, red));
-      image.data[i + 1] = Math.max(0, Math.min(255, green));
-      image.data[i + 2] = Math.max(0, Math.min(255, blue));
-      image.data[i + 3] = 255;
-    }
-  }
-
-  ctx.putImageData(image, 0, 0);
-  const vignette = ctx.createRadialGradient(210, 210, 80, 210, 210, 300);
-  vignette.addColorStop(0, "rgba(0,0,0,0)");
-  vignette.addColorStop(1, "rgba(0,8,16,.72)");
-  ctx.fillStyle = vignette;
-  ctx.fillRect(0, 0, size, size);
-}
+const viewerStudies = {
+  CT: {
+    src: "/viewer-ct.gif",
+    alt: "Genuine animated axial CT sequence of the human head",
+    label: "CT HEAD · AXIAL CINE",
+    frames: "51 slices",
+    credit: "Tafkas · CC BY-SA 3.0",
+  },
+  MRI: {
+    src: "/viewer-mri.gif",
+    alt: "Genuine animated T1-weighted axial MRI sequence of a normal brain",
+    label: "MRI BRAIN · T1 AXIAL",
+    frames: "37 slices",
+    credit: "Dr Laurent Hermoye · CC BY-SA 2.5",
+  },
+  PET: {
+    src: "/viewer-pet.gif",
+    alt: "Genuine animated whole-body FDG PET maximum intensity projection",
+    label: "FDG PET · WHOLE-BODY MIP",
+    frames: "32 projections",
+    credit: "Jens Maus · Public domain",
+  },
+} as const;
 
 function ImagingViewer() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [modality, setModality] = useState<Modality>("MRI");
-  const [slice, setSlice] = useState(48);
-  const [playing, setPlaying] = useState(true);
-  const [preset, setPreset] = useState<ViewerPreset>("Soft tissue");
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    drawSyntheticScan(canvasRef.current, modality, slice, preset);
-  }, [modality, slice, preset]);
-
-  useEffect(() => {
-    if (!playing) return;
-    const timer = window.setInterval(() => {
-      setSlice((current) => (current >= 95 ? 0 : current + 1));
-    }, 110);
-    return () => window.clearInterval(timer);
-  }, [playing]);
+  const [replay, setReplay] = useState(0);
+  const study = viewerStudies[modality];
 
   return (
-    <div className="viewer-shell" aria-label="Interactive synthetic medical imaging demonstration">
+    <div className="viewer-shell" aria-label="Interactive genuine medical imaging demonstration">
       <div className="viewer-toolbar">
         <div className="viewer-modality" aria-label="Select imaging modality">
           {(["CT", "MRI", "PET"] as const).map((item) => (
@@ -196,28 +115,38 @@ function ImagingViewer() {
               className={item === modality ? "is-active" : ""}
               type="button"
               aria-pressed={item === modality}
-              onClick={() => setModality(item)}
+              onClick={() => {
+                setModality(item);
+                setReplay((current) => current + 1);
+              }}
               key={item}
             >
               {item}
             </button>
           ))}
         </div>
-        <span className="live-status"><i aria-hidden="true" /> DEMO SERIES</span>
+        <span className="live-status"><i aria-hidden="true" /> GENUINE CINE</span>
       </div>
 
       <div className="viewport">
-        <canvas ref={canvasRef} aria-label={`${modality} synthetic axial scan, slice ${slice + 1} of 96`} />
+        <Image
+          key={`${modality}-${replay}`}
+          src={study.src}
+          alt={study.alt}
+          fill
+          unoptimized
+          sizes="(max-width: 820px) 100vw, 38rem"
+        />
         <div className="crosshair crosshair-x" aria-hidden="true" />
         <div className="crosshair crosshair-y" aria-hidden="true" />
         <div className="scan-sweep" aria-hidden="true" />
         <div className="viewport-data viewport-data-top">
-          <span>TELERAD / DEMO</span>
-          <span>{modality} AXIAL</span>
+          <span>TELERAD / OPEN CINE</span>
+          <span>{study.label}</span>
         </div>
         <div className="viewport-data viewport-data-bottom">
-          <span>Illustrative synthetic imaging</span>
-          <span>SL {String(slice + 1).padStart(2, "0")} / 96</span>
+          <span>Genuine de-identified imaging</span>
+          <span>{study.frames}</span>
         </div>
       </div>
 
@@ -225,43 +154,18 @@ function ImagingViewer() {
         <button
           className="play-button"
           type="button"
-          onClick={() => setPlaying((current) => !current)}
-          aria-label={playing ? "Pause scan animation" : "Play scan animation"}
+          onClick={() => setReplay((current) => current + 1)}
+          aria-label="Replay scan animation"
         >
-          {playing ? "Ⅱ" : "▶"}
+          ↻
         </button>
-        <label>
-          <span className="sr-only">Imaging slice</span>
-          <input
-            type="range"
-            min="0"
-            max="95"
-            value={slice}
-            onChange={(event) => {
-              setPlaying(false);
-              setSlice(Number(event.target.value));
-            }}
-          />
-        </label>
-        <span className="slice-count">{String(slice + 1).padStart(2, "0")} / 96</span>
+        <div className="cine-track" aria-hidden="true"><i key={`${modality}-${replay}`} /></div>
+        <span className="slice-count">{study.frames}</span>
       </div>
 
       <div className="viewer-footer">
-        <span>Window preset</span>
-        <div>
-          {(["Soft tissue", "Bone"] as const).map((item) => (
-            <button
-              type="button"
-              aria-pressed={preset === item}
-              className={preset === item ? "is-active" : ""}
-              onClick={() => setPreset(item)}
-              key={item}
-              disabled={modality !== "CT"}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+        <span>Image credit</span>
+        <strong>{study.credit}</strong>
       </div>
     </div>
   );
@@ -400,12 +304,12 @@ export default function Home() {
             <p className="eyebrow"><span /> Interactive imaging</p>
             <h2>A familiar workflow, <em>reimagined for the web.</em></h2>
             <p>
-              Explore a synthetic, anonymised-style imaging series. Switch modality, move through slices and adjust
-              the CT window preset — a concise demonstration of the medical-imaging language behind the service.
+              Explore genuine open-license CT, MRI and PET cine sequences. Switch modality to see real scan slices
+              and whole-body molecular imaging in motion.
             </p>
             <div className="viewer-disclaimer">
               <b aria-hidden="true">i</b>
-              <span>This is an illustrative interface using procedurally generated imagery. It is not a diagnostic viewer.</span>
+              <span>These are genuine de-identified clinical images presented for demonstration. This is not a diagnostic viewer.</span>
             </div>
           </div>
           <ImagingViewer />
@@ -531,6 +435,21 @@ export default function Home() {
               Colles fracture radiographs — Ashish j29,
               {" "}<a href="https://commons.wikimedia.org/wiki/File:Colles_fracture.JPG" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
               {" "}<a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">CC BY 3.0</a>.
+            </p>
+            <p>
+              Animated head CT — Tafkas,
+              {" "}<a href="https://commons.wikimedia.org/wiki/File:Schaedel-CT.gif" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
+              {" "}<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.
+            </p>
+            <p>
+              Animated T1 brain MRI — Dr Laurent Hermoye / Imagilys,
+              {" "}<a href="https://commons.wikimedia.org/wiki/File:Brain_MRI_T1_movie.gif" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
+              {" "}<a href="https://creativecommons.org/licenses/by-sa/2.5/" target="_blank" rel="noreferrer">CC BY-SA 2.5</a>.
+            </p>
+            <p>
+              Animated whole-body FDG PET — Jens Maus,
+              {" "}<a href="https://commons.wikimedia.org/wiki/File:PET-MIPS-anim.gif" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
+              {" "}public domain.
             </p>
             <p>Images are displayed with responsive web cropping. Licensors do not endorse Telerad Partners.</p>
           </div>
