@@ -11,21 +11,33 @@ const services = [
     code: "MSK",
     title: "Musculoskeletal Imaging",
     text: "Detailed reporting of joint, spine and soft-tissue studies — from sports injuries to complex orthopaedic pathology.",
+    image: "/imaging-spine-mri.jpg",
+    alt: "Genuine sagittal T2-weighted MRI of the lumbar spine",
+    licence: "CC0",
   },
   {
     code: "ONC",
     title: "Oncology Imaging",
     text: "Staging, surveillance and treatment-response reporting to support confident oncology decision-making.",
+    image: "/imaging-oncology-petct.jpg",
+    alt: "Genuine whole-body PET/CT study with diffuse metastatic disease",
+    licence: "CC BY 3.0",
   },
   {
     code: "URO",
     title: "Urology Imaging",
     text: "Renal, pelvic and genitourinary studies reported with attention to the detail urology teams rely on.",
+    image: "/imaging-prostate-mri.jpg",
+    alt: "Genuine multiparametric prostate MRI showing T2, ADC, perfusion and prediction-map panels",
+    licence: "CC BY 4.0",
   },
   {
     code: "ACU",
     title: "Acute Imaging",
     text: "Priority reporting for emergency and inpatient studies, built around urgency and rapid response.",
+    image: "/imaging-fracture-xray.jpg",
+    alt: "Genuine wrist radiographs showing a Colles fracture",
+    licence: "CC BY 3.0",
   },
 ] as const;
 
@@ -362,8 +374,15 @@ export default function Home() {
           <div className="service-grid">
             {services.map((service, index) => (
               <article className="service-card" key={service.title}>
-                <div className={`service-image service-image-${index + 1}`} aria-hidden="true">
-                  <span>{service.code}</span>
+                <div className={`service-image service-image-${index + 1}`}>
+                  <Image
+                    src={service.image}
+                    alt={service.alt}
+                    fill
+                    sizes="(max-width: 600px) 100vw, (max-width: 1150px) 50vw, 25vw"
+                  />
+                  <span className="service-modality">{service.code}</span>
+                  <span className="scan-badge">Genuine scan · {service.licence}</span>
                   <i />
                 </div>
                 <div className="service-content">
@@ -490,6 +509,32 @@ export default function Home() {
           <a href="#contact">Contact</a>
         </nav>
         <p>© 2026 Telerad Partners. All rights reserved.</p>
+        <details className="imaging-credits">
+          <summary>Clinical image credits and licences</summary>
+          <div>
+            <p>
+              Lumbar spine MRI — Stillwaterising,
+              {" "}<a href="https://commons.wikimedia.org/wiki/File:Lumbar_MRI_t2-tse-rst-sagittal_10.jpg" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
+              {" "}CC0.
+            </p>
+            <p>
+              Whole-body PET/CT with diffuse metastases — Myohan,
+              {" "}<a href="https://commons.wikimedia.org/wiki/File:Abnl_petct.jpg" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
+              {" "}<a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">CC BY 3.0</a>.
+            </p>
+            <p>
+              Multiparametric prostate MRI — Shijun Wang et al.,
+              {" "}<a href="https://commons.wikimedia.org/wiki/File:Prostata_RM_multiparametrica.jpg" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
+              {" "}<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>.
+            </p>
+            <p>
+              Colles fracture radiographs — Ashish j29,
+              {" "}<a href="https://commons.wikimedia.org/wiki/File:Colles_fracture.JPG" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
+              {" "}<a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">CC BY 3.0</a>.
+            </p>
+            <p>Images are displayed with responsive web cropping. Licensors do not endorse Telerad Partners.</p>
+          </div>
+        </details>
       </footer>
     </>
   );

@@ -746,38 +746,36 @@ footer nav a:hover {
     #020a11;
 }
 
-.service-image-2 {
-  background:
-    radial-gradient(circle at 44% 45%, rgba(255, 205, 78, 0.65), transparent 8%),
-    radial-gradient(circle at 60% 58%, rgba(252, 89, 52, 0.45), transparent 14%),
-    radial-gradient(ellipse at 50% 50%, rgba(126, 217, 240, 0.13) 0 34%, rgba(2, 10, 17, 0.9) 35% 44%, transparent 45%),
-    #020a11;
+.service-image img {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center;
+  filter: grayscale(0.06) contrast(1.08) brightness(0.83);
+  transition: filter 320ms ease, transform 500ms cubic-bezier(0.2, 0.75, 0.2, 1);
 }
 
-.service-image-3 {
-  background:
-    linear-gradient(90deg, transparent 49.7%, rgba(125, 231, 255, 0.14) 50%, transparent 50.3%),
-    linear-gradient(transparent 49.7%, rgba(125, 231, 255, 0.14) 50%, transparent 50.3%),
-    radial-gradient(ellipse at 50% 50%, rgba(187, 230, 243, 0.15) 0 29%, rgba(2, 10, 17, 0.92) 30% 43%, transparent 44%),
-    #020a11;
+.service-card:hover .service-image img {
+  filter: grayscale(0) contrast(1.08) brightness(0.98);
+  transform: scale(1.035);
 }
 
-.service-image-4 {
-  background:
-    radial-gradient(circle at 51% 51%, transparent 0 17%, rgba(125, 231, 255, 0.18) 17.5% 18%, transparent 18.5%),
-    repeating-conic-gradient(from 0deg at 50% 50%, rgba(125, 231, 255, 0.08) 0 1deg, transparent 1deg 20deg),
-    radial-gradient(ellipse at 50% 50%, rgba(154, 219, 237, 0.14) 0 32%, rgba(2, 10, 17, 0.9) 33% 42%, transparent 43%),
-    #020a11;
+.service-image-1 img,
+.service-image-2 img,
+.service-image-3 img {
+  object-fit: contain;
+  background: #010509;
 }
 
 .service-image::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 35%, rgba(2, 10, 17, 0.7));
+  background:
+    linear-gradient(to bottom, rgba(2, 10, 17, 0.12), transparent 40%, rgba(2, 10, 17, 0.8)),
+    linear-gradient(90deg, rgba(2, 10, 17, 0.24), transparent 25%, transparent 75%, rgba(2, 10, 17, 0.24));
 }
 
-.service-image span {
+.service-modality {
   position: absolute;
   z-index: 2;
   top: 1rem;
@@ -786,6 +784,22 @@ footer nav a:hover {
   font-family: var(--font-mono-ui);
   font-size: 0.56rem;
   letter-spacing: 0.12em;
+}
+
+.scan-badge {
+  position: absolute;
+  z-index: 3;
+  left: 1rem;
+  bottom: 0.9rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid rgba(125, 231, 255, 0.2);
+  border-radius: 0.2rem;
+  color: rgba(213, 247, 255, 0.82);
+  background: rgba(2, 10, 17, 0.68);
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono-ui);
+  font-size: 0.48rem;
+  letter-spacing: 0.05em;
 }
 
 .service-image i {
@@ -1291,6 +1305,43 @@ footer > p {
   font-size: 0.62rem;
 }
 
+.imaging-credits {
+  grid-column: 1 / -1;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(125, 231, 255, 0.08);
+  color: #5f7e8b;
+  font-size: 0.62rem;
+  line-height: 1.6;
+}
+
+.imaging-credits summary {
+  width: max-content;
+  color: #829faa;
+  font-family: var(--font-mono-ui);
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.imaging-credits div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem 2rem;
+  max-width: 70rem;
+  padding-top: 1rem;
+}
+
+.imaging-credits p {
+  margin: 0;
+}
+
+.imaging-credits a {
+  color: #83b7ca;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
 footer nav {
   display: flex;
   gap: 1.4rem;
@@ -1480,6 +1531,10 @@ footer > p {
 
   footer > p {
     justify-self: start;
+  }
+
+  .imaging-credits div {
+    grid-template-columns: 1fr;
   }
 }
 

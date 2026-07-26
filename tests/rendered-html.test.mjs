@@ -36,6 +36,9 @@ test("server-renders the finished Telerad Partners homepage", async () => {
   assert.match(html, /Subspecialty imaging/);
   assert.match(html, /Global coverage/);
   assert.match(html, /Interactive synthetic medical imaging demonstration/);
+  assert.match(html, /Genuine scan ·[\s\S]*?CC0/);
+  assert.match(html, /Genuine scan ·[\s\S]*?CC BY 4\.0/);
+  assert.match(html, /Clinical image credits and licences/);
   assert.match(html, /telerad-logo\.png/);
   assert.match(html, /Skip to main content/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/i);
@@ -59,6 +62,11 @@ test("ships production metadata and project assets", async () => {
   await Promise.all([
     access(new URL("../public/telerad-logo.png", import.meta.url)),
     access(new URL("../public/og.png", import.meta.url)),
+    access(new URL("../public/imaging-spine-mri.jpg", import.meta.url)),
+    access(new URL("../public/imaging-oncology-petct.jpg", import.meta.url)),
+    access(new URL("../public/imaging-prostate-mri.jpg", import.meta.url)),
+    access(new URL("../public/imaging-fracture-xray.jpg", import.meta.url)),
+    access(new URL("../IMAGING_CREDITS.md", import.meta.url)),
   ]);
 
   await assert.rejects(access(new URL("../app/_sites-preview", projectRoot)));
