@@ -56,8 +56,8 @@ export const metadata: Metadata = {
     images: ["/og.png"],
   },
   icons: {
-    icon: "/telerad-logo.png",
-    apple: "/telerad-logo.png",
+    icon: "/telerad-icon.png",
+    apple: "/telerad-icon.png",
   },
   category: "healthcare",
 };

@@ -185,8 +185,7 @@ export default function Home() {
 
       <header className="site-header">
         <a className="brand" href="#home" aria-label="Telerad Partners home">
-          <Image src="/telerad-logo.png" width="48" height="48" alt="" priority />
-          <span>Telerad <b>Partners</b></span>
+          <Image src="/telerad-logo.png" width="1114" height="748" alt="" priority />
         </a>
         <nav className="desktop-nav" aria-label="Primary navigation">
           <a href="#services">Services</a>
@@ -225,7 +224,7 @@ export default function Home() {
           <div className="hero-glow" aria-hidden="true" />
           <div className="hero-copy">
             <p className="eyebrow"><span /> Global Teleradiology Reporting</p>
-            <h1>Making medicine <em>global.</em></h1>
+            <h1>Making Medicine <em>Global</em></h1>
             <p className="hero-lede">
               Telerad Partners connects hospitals and imaging centres with subspecialist radiologists for accurate,
               timely reporting across musculoskeletal, oncology, urology and acute imaging — backed by a global
@@ -401,8 +400,8 @@ export default function Home() {
 
       <footer>
         <div className="footer-brand">
-          <Image src="/telerad-logo.png" width="64" height="64" alt="" />
-          <div><strong>Telerad Partners</strong><span>Making Medicine Global</span></div>
+          <Image src="/telerad-logo.png" width="1114" height="748" alt="" />
+          <div><span>Making Medicine Global</span></div>
         </div>
         <nav aria-label="Footer navigation">
           <a href="#services">Services</a>
