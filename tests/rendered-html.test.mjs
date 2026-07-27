@@ -32,7 +32,7 @@ test("server-renders the finished Telerad Partners homepage", async () => {
 
   const html = await response.text();
   assert.match(html, /<title>Telerad Partners \| Global Teleradiology Reporting<\/title>/i);
-  assert.match(html, /Making medicine/);
+  assert.match(html, /Making Medicine[\s\S]*?Global/);
   assert.match(html, /Subspecialty imaging/);
   assert.match(html, /Global coverage/);
   assert.match(html, /Interactive genuine medical imaging demonstration/);
@@ -62,6 +62,7 @@ test("ships production metadata and project assets", async () => {
 
   await Promise.all([
     access(new URL("../public/telerad-logo.png", import.meta.url)),
+    access(new URL("../public/telerad-icon.png", import.meta.url)),
     access(new URL("../public/og.png", import.meta.url)),
     access(new URL("../public/imaging-spine-mri.jpg", import.meta.url)),
     access(new URL("../public/imaging-oncology-petct.jpg", import.meta.url)),
