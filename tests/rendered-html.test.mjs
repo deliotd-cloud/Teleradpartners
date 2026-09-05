@@ -85,6 +85,11 @@ test("server-renders the finished Telerad Partners homepage", async () => {
   assert.match(html, /telerad-logo\.png/);
   assert.match(html, /Skip to main content/);
   assert.match(html, /film-triptych/);
+  assert.match(html, /entrance-orbit/);
+  assert.match(html, /A connected world\./);
+  assert.match(html, /coverage-canvas/);
+  assert.match(html, /Global network illustration/);
+  assert.doesNotMatch(html, /entrance-curtain|radar-sweep/);
   assert.match(html, /aria-valuetext="Frame 1 of 37"/);
   assert.match(html, /mailto:eliviontechnologies@gmail\.com/);
   assert.match(html, /Compose email/);

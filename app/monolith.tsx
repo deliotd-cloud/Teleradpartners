@@ -1,6 +1,8 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import Image from "next/image";
+import { CoverageGlobe } from "./coverage-globe";
 
 export type Modality = "CT" | "MRI" | "PET";
 const scans = {
@@ -42,6 +44,11 @@ export function MotionControls() {
   return <div className="motion-controls"><button type="button" onClick={() => window.dispatchEvent(new Event("telerad:intro"))} aria-label="Replay entrance animation">↻ <span>Intro</span></button><button type="button" onClick={toggle} aria-pressed={paused}>{paused ? "▶" : "Ⅱ"} <span>{paused ? "Play motion" : "Pause motion"}</span></button></div>;
 }
 
+export function GlobalCoverage() {
+  const { paused } = useContext(Motion);
+  return <CoverageGlobe paused={paused} />;
+}
+
 export function Entrance() {
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -73,7 +80,7 @@ export function Entrance() {
     }
     return () => { clearTimeout(timer); window.removeEventListener("telerad:intro", start); el.removeEventListener("cancel", finish); el.removeEventListener("close", finishTimer); el.close(); };
   }, []);
-  return <dialog ref={dialog} className="entrance" aria-labelledby="entrance-title"><div className="entrance-curtain" aria-hidden="true" /><div className="entrance-copy"><span>TELERAD PARTNERS</span><h2 id="entrance-title">A new perspective.</h2><div className="entrance-progress" aria-hidden="true"><i /></div><p>Making Medicine Global</p></div><form method="dialog"><button className="skip-intro">Skip intro ↗</button></form></dialog>;
+  return <dialog ref={dialog} className="entrance" aria-labelledby="entrance-title"><div className="entrance-grid" aria-hidden="true" /><div className="entrance-orbit" aria-hidden="true"><i /><i /><i /></div><div className="entrance-copy"><Image className="entrance-icon" src="/telerad-icon.png" alt="" width={64} height={64} unoptimized /><span>TELERAD PARTNERS</span><h2 id="entrance-title">A connected world.</h2><div className="entrance-progress" aria-hidden="true"><i /></div><p>Making Medicine Global</p></div><form method="dialog"><button className="skip-intro">Skip intro ↗</button></form></dialog>;
 }
 
 export function Cine({ modality, stopped = false, requestedFrame, onFrame }: { modality: Modality; stopped?: boolean; requestedFrame?: number; onFrame?: (frame: number) => void }) {
