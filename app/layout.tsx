@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./monolith.css";
+import { introBootstrap, introFirstPaintCss } from "./intro-bootstrap";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,7 +72,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: introFirstPaintCss }} />
+        <script id="intro-bootstrap" dangerouslySetInnerHTML={{ __html: introBootstrap }} />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
     </html>
   );

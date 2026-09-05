@@ -59,6 +59,8 @@ Keep the existing public service statements and 24/7/365 wording aligned with th
 
 Monolith styles are in `app/monolith.css`, and the entrance, motion controls and imaging player are in `app/monolith.tsx`. The entrance runs once per browser tab session unless replayed, and is bypassed for reduced-motion visitors and direct section links. Static scan posters remain available while the canvas player loads or if JavaScript is disabled.
 
+The inline head bootstrap in `app/intro-bootstrap.ts` reveals the server-rendered splash before the homepage's first paint, then hands it over to the modal after hydration. Skip and Escape work before hydration. If the framework fails to start within six seconds, the gate expires and exposes the homepage without a delayed intro. Without JavaScript, no gate is applied.
+
 The imaging viewer uses genuine, de-identified clinical sequences sourced under commercial-compatible open licences. It is clearly labelled as a demonstration and is not a diagnostic viewer.
 
 The service-card imaging is genuine clinical material. Full source and commercial-reuse licence details are recorded in `IMAGING_CREDITS.md` and displayed in the website footer.

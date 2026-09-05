@@ -1,8 +1,50 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
+import vm from "node:vm";
 
 const projectRoot = new URL("../", import.meta.url);
+
+test("splash gate runs before the body, honours bypasses and cannot trap visitors", async () => {
+  const html = await (await render()).text();
+  const bootstrap = html.match(/<script id="intro-bootstrap">([\s\S]*?)<\/script>/);
+  assert.ok(bootstrap, "pre-paint bootstrap must be present in server HTML");
+  assert.ok(html.indexOf(bootstrap[0]) < html.indexOf("<body"), "gate must run before visible content");
+  function start({ seen = false, reduced = false, hash = "" } = {}) {
+    const dataset = {}, events = new Map(), timers = new Map(), stored = new Map();
+    vm.runInNewContext(bootstrap[1], {
+      document: { documentElement: { dataset }, addEventListener: (name, fn) => events.set(name, fn), removeEventListener: name => events.delete(name) },
+      window: { addEventListener: (name, fn) => events.set(name, fn), removeEventListener: name => events.delete(name) },
+      sessionStorage: { getItem: () => seen ? "seen" : null, setItem: (key, value) => stored.set(key, value) },
+      location: { hash }, matchMedia: () => ({ matches: reduced }),
+      setTimeout: (fn, delay) => { timers.set(delay, fn); return delay; }, clearTimeout: id => timers.delete(id),
+    });
+    return { dataset, events, timers, stored };
+  }
+  const first = start();
+  assert.equal(first.dataset.intro, "pending");
+  first.events.get("click")({ target: { closest: () => true }, preventDefault() {} });
+  assert.equal(first.dataset.intro, "skipped");
+  assert.equal(first.stored.get("telerad-monolith-intro"), "seen");
+  assert.equal(first.timers.size, 0);
+  const escape = start();
+  escape.events.get("keydown")({ key: "Escape", preventDefault() {} });
+  assert.equal(escape.dataset.intro, "skipped");
+  for (const options of [{ seen: true }, { reduced: true }, { hash: "#contact" }]) {
+    const bypass = start(options);
+    assert.equal(bypass.dataset.intro, undefined);
+    assert.equal(bypass.timers.size, 0);
+  }
+  const failed = start();
+  failed.timers.get(6000)();
+  assert.equal(failed.dataset.intro, "expired");
+  assert.equal(failed.events.size, 0);
+  const ready = start();
+  ready.dataset.intro = "ready";
+  ready.events.get("telerad:intro-ready")();
+  assert.equal(ready.timers.size, 0);
+  assert.equal(ready.events.size, 0);
+});
 
 async function render(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);

@@ -56,11 +56,14 @@ export function Entrance() {
       clearTimeout(timer);
       if (el?.open) el.close();
       el?.showModal();
+      // The modal takes over the already-visible server-rendered splash in
+      // the same task, with no intermediate paint of the homepage.
+      document.documentElement.dataset.intro = "ready";
+      window.dispatchEvent(new Event("telerad:intro-ready"));
       timer = setTimeout(finish, 2400);
     }
-    let seen = false;
-    try { seen = sessionStorage.getItem("telerad-monolith-intro") === "seen"; } catch { /* Continue without storage. */ }
-    if (!seen && !location.hash && !matchMedia("(prefers-reduced-motion: reduce)").matches) start();
+    // If startup expired, was skipped, or was bypassed, never show a late intro.
+    if (document.documentElement.dataset.intro === "pending") start();
     window.addEventListener("telerad:intro", start);
     el.addEventListener("cancel", finish);
     el.addEventListener("close", finishTimer);
