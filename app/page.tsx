@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import Image from "next/image";
 
-import { Monolith, Entrance, MotionControls, Cine, ImagingViewer } from "./monolith";
+import { Monolith, Entrance, MotionControls, Cine, ImagingViewer, GlobalCoverage } from "./monolith";
 
 const services = [
   {
@@ -258,14 +258,7 @@ export default function Home() {
             </p>
             <div className="coverage-stat"><strong>24</strong><span>/ 7 / 365<br />coverage model</span></div>
           </div>
-          <div className="radar" aria-label="Animated illustration of global coverage">
-            <div className="radar-grid" aria-hidden="true" />
-            <div className="radar-sweep" aria-hidden="true" />
-            <span className="radar-point point-one">Americas</span>
-            <span className="radar-point point-two">Europe</span>
-            <span className="radar-point point-three">Asia Pacific</span>
-            <div className="radar-centre" aria-hidden="true"><i /></div>
-          </div>
+          <GlobalCoverage />
         </section>
 
         <section className="contact-section" id="contact">
