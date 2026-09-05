@@ -60,6 +60,9 @@ The service cards and interactive viewers use genuine clinical images sourced fr
 
 ## Use notes
 
+- Monolith uses lossless PNG contact sheets (`ct-frames.png`, `mri-frames.png`, `pet-frames.png`) extracted from all original frames, with eight columns. CT: 51 frames at 100 ms; MRI: 37 frames at 300 ms; PET: 32 projections at 200 ms. Original scan pixels and sequence order are preserved; transparent pixels are composited over the viewer background. The corresponding source licences above also apply to these derived assets.
+- Static `*-poster.webp` files are lossless copies of the original first frames for loading and no-JavaScript display.
+
 - The website may crop the files responsively using CSS.
 - No affiliation or endorsement by the image creators or Wikimedia Commons is implied.
 - Keep this file and the visible website credits with redistributed versions of the project.

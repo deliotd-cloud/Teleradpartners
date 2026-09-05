@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import Image from "next/image";
 
-type Modality = "CT" | "MRI" | "PET";
+import { Monolith, Entrance, MotionControls, Cine, ImagingViewer } from "./monolith";
 
 const services = [
   {
@@ -77,110 +77,23 @@ const workflow = [
   ["04", "Report returned", "The verified report goes back to the clinical team."],
 ] as const;
 
-const viewerStudies = {
-  CT: {
-    src: "/viewer-ct.gif",
-    alt: "Genuine animated axial CT sequence of the human head",
-    label: "CT HEAD · AXIAL CINE",
-    frames: "51 slices",
-    credit: "Tafkas · CC BY-SA 3.0",
-  },
-  MRI: {
-    src: "/viewer-mri.gif",
-    alt: "Genuine animated T1-weighted axial MRI sequence of a normal brain",
-    label: "MRI BRAIN · T1 AXIAL",
-    frames: "37 slices",
-    credit: "Dr Laurent Hermoye · CC BY-SA 2.5",
-  },
-  PET: {
-    src: "/viewer-pet.gif",
-    alt: "Genuine animated whole-body FDG PET maximum intensity projection",
-    label: "FDG PET · WHOLE-BODY MIP",
-    frames: "32 projections",
-    credit: "Jens Maus · Public domain",
-  },
-} as const;
-
-function ImagingViewer() {
-  const [modality, setModality] = useState<Modality>("MRI");
-  const [replay, setReplay] = useState(0);
-  const study = viewerStudies[modality];
-
-  return (
-    <div className="viewer-shell" aria-label="Interactive genuine medical imaging demonstration">
-      <div className="viewer-toolbar">
-        <div className="viewer-modality" aria-label="Select imaging modality">
-          {(["CT", "MRI", "PET"] as const).map((item) => (
-            <button
-              className={item === modality ? "is-active" : ""}
-              type="button"
-              aria-pressed={item === modality}
-              onClick={() => {
-                setModality(item);
-                setReplay((current) => current + 1);
-              }}
-              key={item}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-        <span className="live-status"><i aria-hidden="true" /> GENUINE CINE</span>
-      </div>
-
-      <div className="viewport">
-        <Image
-          key={`${modality}-${replay}`}
-          src={study.src}
-          alt={study.alt}
-          fill
-          unoptimized
-          sizes="(max-width: 820px) 100vw, 38rem"
-        />
-        <div className="crosshair crosshair-x" aria-hidden="true" />
-        <div className="crosshair crosshair-y" aria-hidden="true" />
-        <div className="scan-sweep" aria-hidden="true" />
-        <div className="viewport-data viewport-data-top">
-          <span>TELERAD / OPEN CINE</span>
-          <span>{study.label}</span>
-        </div>
-        <div className="viewport-data viewport-data-bottom">
-          <span>Genuine de-identified imaging</span>
-          <span>{study.frames}</span>
-        </div>
-        <div className="image-credit">
-          {study.credit}
-        </div>
-      </div>
-
-      <div className="viewer-controls">
-        <button
-          className="play-button"
-          type="button"
-          onClick={() => setReplay((current) => current + 1)}
-          aria-label="Replay scan animation"
-        >
-          ↻
-        </button>
-        <div className="cine-track" aria-hidden="true"><i key={`${modality}-${replay}`} /></div>
-        <span className="slice-count">{study.frames}</span>
-      </div>
-
-    </div>
-  );
-}
-
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [formMessage, setFormMessage] = useState("");
 
   function handleContact(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setFormMessage("Thank you. The contact delivery endpoint is ready to be connected before launch.");
+    const data = new FormData(event.currentTarget);
+    const subject = `Telerad Partners enquiry — ${String(data.get("organisation") ?? "")}`;
+    const body = `Name: ${data.get("name")}\nEmail: ${data.get("email")}\nOrganisation: ${data.get("organisation")}\n\n${data.get("message")}`;
+    window.location.href = `mailto:eliviontechnologies@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setFormMessage("Your email app will open with your enquiry. Please review it and press Send there. If it does not open, email eliviontechnologies@gmail.com directly.");
   }
 
   return (
-    <>
+    <Monolith>
+      <Entrance />
+      <noscript><style>{`.contact-form, .motion-controls, .menu-button { display: none; }`}</style></noscript>
       <a className="skip-link" href="#main">Skip to main content</a>
 
       <header className="site-header">
@@ -194,6 +107,7 @@ export default function Home() {
           <a href="#coverage">Global coverage</a>
         </nav>
         <a className="header-cta" href="#contact">Start a conversation <span aria-hidden="true">↗</span></a>
+        <MotionControls />
         <button
           className="menu-button"
           type="button"
@@ -219,42 +133,22 @@ export default function Home() {
       </header>
 
       <main id="main">
-        <section className="hero" id="home">
-          <div className="ambient-grid" aria-hidden="true" />
-          <div className="hero-glow" aria-hidden="true" />
+        <section className="hero monolith-hero" id="home">
+          <div className="film-triptych"><Cine modality="CT" /><Cine modality="MRI" /><Cine modality="PET" /></div>
+          <div className="film-shade" aria-hidden="true" />
+          <div className="hero-imaging-credits"><a href="https://commons.wikimedia.org/wiki/File:Schaedel-CT.gif" target="_blank" rel="noreferrer">Tafkas · CC BY-SA 3.0</a><a href="https://commons.wikimedia.org/wiki/File:Brain_MRI_T1_movie.gif" target="_blank" rel="noreferrer">L. Hermoye · CC BY-SA 2.5</a><a href="https://commons.wikimedia.org/wiki/File:PET-MIPS-anim.gif" target="_blank" rel="noreferrer">Jens Maus · Public domain</a></div>
+          <div className="film-top"><span>RADIOLOGY / IN A NEW LIGHT</span><span>TELERAD PARTNERS</span></div>
           <div className="hero-copy">
-            <p className="eyebrow"><span /> Global Teleradiology Reporting</p>
-            <h1>Making Medicine <em>Global</em></h1>
-            <p className="hero-lede">
-              Telerad Partners connects hospitals and imaging centres with subspecialist radiologists for accurate,
-              timely reporting across musculoskeletal, oncology, urology and acute imaging — backed by a global
-              network built for round-the-clock coverage.
-            </p>
-            <div className="hero-actions">
-              <a className="button button-primary" href="#services">Explore our services <span aria-hidden="true">↓</span></a>
-              <a className="button button-secondary" href="#contact">Contact us <span aria-hidden="true">↗</span></a>
-            </div>
-            <div className="hero-proof" aria-label="Service overview">
-              <div><strong>24 / 7 / 365</strong><span>Global coverage model</span></div>
-              <div><strong>4</strong><span>Core reporting areas</span></div>
-              <div><strong>1</strong><span>Connected partnership</span></div>
+            <p className="eyebrow"><span /> THE BIGGER PICTURE</p>
+            <h1>Making Medicine<br /><em>Global</em></h1>
+            <div className="monolith-bottom">
+              <p className="hero-lede">Welcome to the future of radiology.<br />Welcome to Telerad Partners.</p>
+              <div className="hero-actions"><a className="button button-primary" href="#services">Explore our expertise <span aria-hidden="true">↗</span></a><a className="button button-secondary" href="#viewer">Experience the imaging ↓</a></div>
             </div>
           </div>
-
-          <div className="hero-visual">
-            <div className="orbit orbit-one" aria-hidden="true" />
-            <div className="orbit orbit-two" aria-hidden="true" />
-            <ImagingViewer />
-            <div className="floating-note note-top" aria-hidden="true">
-              <span>STUDY STATUS</span>
-              <strong>Ready for review</strong>
-            </div>
-            <div className="floating-note note-bottom" aria-hidden="true">
-              <span>ROUTING</span>
-              <strong>Subspecialty matched</strong>
-            </div>
-          </div>
+          <a className="film-corner" href="#services" aria-label="Explore our services">↓</a>
         </section>
+        <div className="ticker" aria-hidden="true"><div>{[0, 1, 2, 3].map(i => <span className="ticker-group" key={i}><span>SUBSPECIALIST EXPERTISE</span><b>✳</b><span>24/7 REPORTING</span><b>✳</b><span>CONNECTED PARTNERSHIPS</span><b>✳</b></span>)}</div></div>
 
         <section className="trust-strip" aria-label="Telerad Partners service strengths">
           {trustPoints.map(([code, title, text]) => (
@@ -269,7 +163,7 @@ export default function Home() {
           <div className="section-heading">
             <div>
               <p className="eyebrow"><span /> What we report</p>
-              <h2>Subspecialty imaging <em>coverage.</em></h2>
+              <h2>See further.<br /><em>Together.</em></h2><p className="section-subtitle">Subspecialty imaging coverage</p>
             </div>
             <p>Focused expertise across the areas that demand it most.</p>
           </div>
@@ -300,9 +194,9 @@ export default function Home() {
         <section className="section viewer-section" id="viewer">
           <div className="viewer-copy">
             <p className="eyebrow"><span /> Interactive imaging</p>
-            <h2>A familiar workflow, <em>reimagined for the web.</em></h2>
+            <h2>Every image.<br /><em>A new perspective.</em></h2>
             <p>
-              Explore genuine open-license CT, MRI and PET cine sequences. Switch modality to see real scan slices
+              Explore genuine open-license CT, MRI and PET cine sequences. Play, pause or step through real scan slices
               and whole-body molecular imaging in motion.
             </p>
             <div className="viewer-disclaimer">
@@ -313,7 +207,7 @@ export default function Home() {
           <ImagingViewer />
         </section>
 
-        <section className="section workflow-section" aria-labelledby="workflow-title">
+        <section className="section workflow-section" id="workflow" aria-labelledby="workflow-title">
           <div className="section-heading">
             <div>
               <p className="eyebrow"><span /> Connected workflow</p>
@@ -377,22 +271,18 @@ export default function Home() {
         <section className="contact-section" id="contact">
           <div className="contact-copy">
             <p className="eyebrow"><span /> Get in touch</p>
-            <h2>Let&apos;s talk about your <em>reporting needs.</em></h2>
-            <p>Tell us about your department and we&apos;ll get back to you.</p>
-            <div className="operations-card">
-              <span>RADIOLOGY OPERATIONS</span>
-              <strong><i /> Online</strong>
-              <p>Secure workflows · Global coverage · Built for partnership</p>
-            </div>
+            <h2>Partner<br /><em>with us.</em></h2>
+            <p>Enhance your radiology services with Telerad Partners. Tell us about your department.</p><a className="contact-email" href="mailto:eliviontechnologies@gmail.com">eliviontechnologies@gmail.com ↗</a>
+
           </div>
-          <form className="contact-form" onSubmit={handleContact}>
+          <form className="contact-form" onSubmit={handleContact}><p className="contact-note">Complete your enquiry to open a draft in your email app. You will review and send it there.</p>
             <div className="field-row">
               <label>Name<input name="name" type="text" autoComplete="name" required /></label>
               <label>Email<input name="email" type="email" autoComplete="email" required /></label>
             </div>
             <label>Organisation<input name="organisation" type="text" autoComplete="organization" required /></label>
             <label>Message<textarea name="message" rows={5} required /></label>
-            <button className="button button-primary" type="submit">Send message <span aria-hidden="true">↗</span></button>
+            <button className="button button-primary" type="submit">Compose email <span aria-hidden="true">↗</span></button>
             <p className="form-status" role="status" aria-live="polite">{formMessage}</p>
           </form>
         </section>
@@ -449,10 +339,10 @@ export default function Home() {
               {" "}<a href="https://commons.wikimedia.org/wiki/File:PET-MIPS-anim.gif" target="_blank" rel="noreferrer">Wikimedia Commons</a>,
               {" "}public domain.
             </p>
-            <p>Images are displayed with responsive web cropping. Licensors do not endorse Telerad Partners.</p>
+            <p>Images are displayed with responsive web cropping. Cine frames are extracted losslessly from the original sequences for playback and frame selection. Licensors do not endorse Telerad Partners.</p>
           </div>
         </details>
       </footer>
-    </>
+    </Monolith>
   );
 }

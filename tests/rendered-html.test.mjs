@@ -42,14 +42,19 @@ test("server-renders the finished Telerad Partners homepage", async () => {
   assert.match(html, /Clinical image credits and licences/);
   assert.match(html, /telerad-logo\.png/);
   assert.match(html, /Skip to main content/);
+  assert.match(html, /film-triptych/);
+  assert.match(html, /aria-valuetext="Frame 1 of 37"/);
+  assert.match(html, /mailto:eliviontechnologies@gmail\.com/);
+  assert.match(html, /Compose email/);
+  assert.doesNotMatch(html, /contact delivery endpoint is ready/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/i);
 });
 
 test("ships production metadata and project assets", async () => {
   const [layout, page, css, packageJson] = await Promise.all([
     readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/monolith.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/monolith.css", import.meta.url), "utf8"),
     readFile(new URL("../package.json", import.meta.url), "utf8"),
   ]);
 
@@ -71,6 +76,10 @@ test("ships production metadata and project assets", async () => {
     access(new URL("../public/viewer-ct.gif", import.meta.url)),
     access(new URL("../public/viewer-mri.gif", import.meta.url)),
     access(new URL("../public/viewer-pet.gif", import.meta.url)),
+    ...["ct", "mri", "pet"].flatMap((name) => [
+      access(new URL(`../public/${name}-frames.png`, import.meta.url)),
+      access(new URL(`../public/${name}-poster.webp`, import.meta.url)),
+    ]),
     access(new URL("../IMAGING_CREDITS.md", import.meta.url)),
   ]);
 
