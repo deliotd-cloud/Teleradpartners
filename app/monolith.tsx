@@ -85,6 +85,7 @@ export function Cine({ modality, stopped = false, requestedFrame, onFrame }: { m
   useEffect(() => {
     const el = canvas.current;
     if (!el) return;
+    el.dataset.ready = "false";
     const context = el.getContext("2d", { alpha: false });
     if (!context) return;
     const sheet = new window.Image();
@@ -110,12 +111,13 @@ export function Cine({ modality, stopped = false, requestedFrame, onFrame }: { m
       const w = study.width * scale, h = study.height * scale;
       context.fillStyle = "#030508"; context.fillRect(0, 0, 640, 640);
       context.drawImage(sheet, frame % 8 * study.width, Math.floor(frame / 8) * study.height, study.width, study.height, (640-w)/2, (640-h)/2, w, h);
+      el.dataset.ready = "true";
       drawn = frame; state.dirty = false; onFrame?.(frame);
     }
     raf = requestAnimationFrame(paint);
     return () => { disposed = true; cancelAnimationFrame(raf); observer.disconnect(); };
   }, [study, onFrame]);
-  return <div className="scan-media"><canvas ref={canvas} className="cine" width={640} height={640} style={{ backgroundImage: `url(/${study.file}-poster.webp)` }} role="img" aria-label={`Genuine de-identified imaging: ${study.title}, ${study.detail}`} /><div className="media-status"><span>{study.title}</span><span>OPEN IMAGING / DEMO</span></div><div className="scan-beam" aria-hidden="true" /><a className="image-credit" href={`https://commons.wikimedia.org/wiki/File:${study.source}`} target="_blank" rel="noreferrer">{study.credit}</a></div>;
+  return <div className="scan-media"><div className="scan-poster" style={{ backgroundImage: `url(/${study.file}-poster.webp)` }} aria-hidden="true" /><canvas ref={canvas} className="cine" width={640} height={640} role="img" aria-label={`Genuine de-identified imaging: ${study.title}, ${study.detail}`} /><div className="media-status"><span>{study.title}</span><span>OPEN IMAGING / DEMO</span></div><div className="scan-beam" aria-hidden="true" /><a className="image-credit" href={`https://commons.wikimedia.org/wiki/File:${study.source}`} target="_blank" rel="noreferrer">{study.credit}</a></div>;
 }
 
 export function ImagingViewer() {
